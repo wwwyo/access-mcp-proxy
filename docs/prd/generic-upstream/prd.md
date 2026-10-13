@@ -45,7 +45,7 @@ status: draft
 
 ## 最初に判断すること: MCP Server Portalsで足りるか
 
-Cloudflareの[MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)のドキュメント（2026-10-13確認）には、次の機能が書かれている。上流への固定Bearer・カスタムヘッダーの付与、Tunnel経由のprivate networkにある上流への接続（Gateway routing、Streamable HTTPのみ）、serverごとのAccess policy、portal単位のtoolの取捨選択。これらで足りるなら、自前の汎用化は不要になる。実装の前に、OpenScreenをPortals経由でChatGPTから使えるかを試し、次の表の未確認項目を埋めて方針を決める。
+Cloudflareの[MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)のドキュメント（2026-10-13確認）には、次の機能が書かれている。上流への固定Bearer・カスタムヘッダーの付与、Tunnelなどのconnectorとprivate hostnameを使った、private networkにある上流への接続（Gateway routingが必須、Streamable HTTPのみ）、serverごとのAccess policy、portal単位のtoolの取捨選択。これらで足りるなら、自前の汎用化は不要になる。実装の前に、OpenScreenをPortals経由でChatGPTから使えるかを試し、次の表の未確認項目を埋めて方針を決める。
 
 | 観点 | このProxyを汎用化 | MCP Server Portals | sigbit/mcp-auth-proxy | Stacklok ToolHive |
 | --- | --- | --- | --- | --- |
@@ -55,6 +55,7 @@ Cloudflareの[MCP Server Portals](https://developers.cloudflare.com/cloudflare-o
 | 上流へ利用者IDを渡す | Access JWTを検証し`sub`で縛る | 渡さないと記載。上流側でsession ownerを確かめられない | 未確認 | 未確認 |
 | Routeごとの認証境界 | Access appを分ける（ADR 0002） | portalを分ければ可能。1つのportal内では、1回のログインで全serverに届く | 未確認 | 未確認 |
 | stdio MCP | 対象外（bridgeを前段） | 対象外（Streamable HTTP / SSE） | stdio・HTTPとも公開できる | コンテナで隔離して実行 |
+| private networkの上流 | 対象（Proxyが同じマシンで中継） | ドキュメントに対応の記載あり。localhostだけで待ち受けるHTTPの上流に届くかは未確認 | 未確認 | 未確認 |
 | 追加で必要なもの | Proxyの常駐 | Gateway routing、private hostname | OAuthサーバーの運用 | コンテナ実行環境。個人用途には重い |
 | ChatGPTとの接続 | 未実施（Access discoveryは検証済み） | 未確認 | 検証済みとされる | 未確認 |
 
@@ -70,7 +71,8 @@ Cloudflareの[MCP Server Portals](https://developers.cloudflare.com/cloudflare-o
 
 - 本人がRouteを1つ宣言して起動すると、外部agentはそのRouteのMCPのtoolを一覧でき、呼び出せる。コードの変更は不要。
 - Route AのAccess appで得た認可では、Route Bへのリクエストが拒否される。
-- 上流の秘密は、外部agentへの応答・ログ・tracked fileのいずれにも平文で現れない。
+- Route Aで確立したMCPセッションのIDをRoute Bへ送っても、Route Bの上流には中継されない。
+- 上流の秘密は、外部agentへの応答・ログ・git管理下のファイルのいずれにも平文で現れない。
 - 汎用化後もOpenScreenは同じ公開URLで使える。変わる場合は移行手順がある。
 
 ## Success Metrics

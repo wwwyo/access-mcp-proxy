@@ -1,12 +1,9 @@
----
-status: accepted
----
-
 # ADR 0002: 公開するMCPごとにAccess appを分ける
 
+Status: Accepted
 Date: 2026-10-13
 
-ローカルMCPを外部agentへ公開する単位（Route）ごとに、Cloudflare Accessのアプリ（AUD）を1つ割り当てる。1つのAccessログインや1つのOAuth grantで、複数のRouteを開けるようにはしない。
+ローカルMCPを外部agentへ公開する単位（Route）ごとに、Cloudflare Accessのアプリ（AUD）を1つ割り当てる。1つのAccessログインや1つのOAuth grantで、複数のRouteを開けるようにはしない。この判断は、このProxyを汎用化する場合にも、MCP Server Portalsを使う場合にも適用する（[PRD](../prd/generic-upstream/prd.md)の判断を待たない）。
 
 外部agentが読む文書やtool応答にはprompt injectionが混入しうる。1回のログインでローカルの全MCPに届く構成にすると、閲覧系のtoolが受け取った指示で、filesystemやshell系のtoolまで操作されうる。Routeごとに認可を分ければ、外部agentに渡す権限をそのRouteの範囲に限定できる。
 
