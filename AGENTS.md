@@ -10,6 +10,7 @@ Cloudflare AccessのJWTを検証し、ローカルMCPサーバーへの固定Bea
 - `src/redact.ts`: 応答に混入した固定トークンの除去。
 - `test/`: HTTP経由のテスト。
 - `docs/connect.md`: CloudflareとChatGPTの設定。
+- `docs/prd/`: 要件。
 - `docs/adr/`: 設計判断。
 
 ## 開発
@@ -27,6 +28,7 @@ Cloudflareを操作する際は`cf` CLIを優先し、Orca stateの操作は`orc
 - Access assertion: Cloudflareがoriginへ付与する署名済みJWT。クライアントのOAuth tokenとは別物。
 - OpenScreen token: ローカルOpenScreenだけに送る固定Bearer。
 - Session owner: Access JWTの`sub`。上流のMCPセッションをこのユーザーに結び付ける。
+- Portal: Cloudflare MCP Server Portal。外部agentへの入口で、URLとAccess appを1つずつ持つ。権限の弱いMCPは`mcp.wwwyo.dev`に束ね、強いMCPだけ別portalにする（ADR 0002）。
 
 ## Pullfrog
 
