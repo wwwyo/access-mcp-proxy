@@ -28,7 +28,7 @@ Cloudflareを操作する際は`cf` CLIを優先し、Orca stateの操作は`orc
 - Access assertion: Cloudflareがoriginへ付与する署名済みJWT。クライアントのOAuth tokenとは別物。
 - OpenScreen token: ローカルOpenScreenだけに送る固定Bearer。
 - Session owner: Access JWTの`sub`。上流のMCPセッションをこのユーザーに結び付ける。
-- Route: 外部agentへ公開する単位。公開URL・上流MCP・上流の秘密（mise環境変数名）・Access app（AUD）の組。Routeごとに別のAccess appを使う（ADR 0002）。
+- Portal: Cloudflare MCP Server Portal。外部agentへの入口で、URLとAccess appを1つずつ持つ。権限の弱いMCPは`mcp.wwwyo.dev`に束ね、強いMCPだけ別portalにする（ADR 0002）。
 
 ## Pullfrog
 
