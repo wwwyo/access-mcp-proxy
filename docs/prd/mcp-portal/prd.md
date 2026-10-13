@@ -1,5 +1,5 @@
 ---
-status: draft
+status: ready
 ---
 
 # ローカルMCPをportal越しに外部agentへ公開する
@@ -76,5 +76,6 @@ Portalsを選んだ理由と、手放したものを残す。
 ## 検証済み・未決事項
 
 - 検証済み（2026-10-13）: portalから`http://127.0.0.1:47821/mcp`のOpenScreenへ届き、固定Bearerで25個のtoolを同期できた。network policyを有効にすると47822への接続は失敗し、無効にすると届いた。portalは未認証時に401と`WWW-Authenticate`を返し、OAuth discovery（DCR・S256・refresh）も揃っている。
-- 未決: ChatGPTからログインしてOpenScreenのtoolを使えるか。service tokenで接続した検証では、portal自身の管理用toolしか見えなかった。server側のAccess app（type `mcp`）を紐付けても変わらず、本人ログインの経路で確かめる。
+- 検証済み（2026-10-13）: ChatGPTに`https://mcp.wwwyo.dev/mcp`をOAuthで登録してログインし、OpenScreenの`getCurrentDocument`を実行できた。
+- 運用上の注意: MCP serverのIDに`-`を含めると、ChatGPTからのtool呼び出しが`Invalid tool name format`で失敗した（portalはtool名を`serverId_toolName`で扱う）。IDは英数字だけにする。ChatGPTには`/mcp`まで含むURLを登録する。portalをAPIで更新するときは、省いた項目が既定値に戻るので全項目を指定する。
 - 決定: 上流の秘密はCloudflareに預ける（2026-10-13）。
