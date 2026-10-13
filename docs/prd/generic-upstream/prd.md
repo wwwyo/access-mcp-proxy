@@ -55,9 +55,9 @@ Cloudflareの[MCP Server Portals](https://developers.cloudflare.com/cloudflare-o
 | 上流へ利用者IDを渡す | Access JWTを検証し`sub`で縛る | 渡さないと記載。上流側でsession ownerを確かめられない | 未確認 | 未確認 |
 | Routeごとの認証境界 | Access appを分ける（ADR 0002） | portalを分ければ可能。1つのportal内では、1回のログインで全serverに届く | 未確認 | 未確認 |
 | stdio MCP | 対象外（bridgeを前段） | 対象外（Streamable HTTP / SSE） | stdio・HTTPとも公開できる | コンテナで隔離して実行 |
-| private networkの上流 | 対象（Proxyが同じマシンで中継） | ドキュメントに対応の記載あり。localhostだけで待ち受けるHTTPの上流に届くかは未確認 | 未確認 | 未確認 |
+| private networkの上流 | 対象（Proxyが同じマシンで中継） | 届く。Tunnelに`127.0.0.1/32`のCIDR routeを足し、Gateway routingを有効にした`http://127.0.0.1:<port>/mcp`の上流から、固定Bearerでtool一覧を同期できた（2026-10-13） | 未確認 | 未確認 |
 | 追加で必要なもの | Proxyの常駐 | Gateway routing、private hostname | OAuthサーバーの運用 | コンテナ実行環境。個人用途には重い |
-| ChatGPTとの接続 | 未実施（Access discoveryは検証済み） | 未確認 | 検証済みとされる | 未確認 |
+| ChatGPTとの接続 | 未実施（Access discoveryは検証済み） | 未確認。portalは未認証時に401と`WWW-Authenticate`を返し、OAuth discovery（DCR・S256・refresh）も揃っている | 検証済みとされる | 未確認 |
 
 判断の基準:
 
@@ -82,6 +82,6 @@ Cloudflareの[MCP Server Portals](https://developers.cloudflare.com/cloudflare-o
 
 ## 未決事項
 
-- Portalsが、localhostだけで待ち受けるMCPへTunnel経由で届くか。HTTPの上流を受け付けるか。
-- ChatGPTが、Portals（stateless MCP `2026-07-28`対応のclient向け`/mcp`）と接続できるか。
-- 上流の秘密をCloudflareに預けることを許容するか。
+- ChatGPTからportalへOAuthでログインし、OpenScreenのtoolを一覧・実行できるか。service tokenでportalへ接続した検証では、portal自身の管理用toolしか見えなかった。server側にもAccess app（type `mcp`）を紐付けたが変わらず、本人ログインの経路で確かめる必要がある。
+- 上流の秘密をCloudflareに預けることは許容する（2026-10-13決定）。
+- `127.0.0.1/32`のrouteは、Gateway経由の通信からMacのloopback上の全portへ届きうる。採用する場合は、Gatewayのnetwork policyで対象portに絞る。
