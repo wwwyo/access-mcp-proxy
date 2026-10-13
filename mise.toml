@@ -1,0 +1,4 @@
+[tools]
+"aqua:cloudflare/cloudflared" = "2026.9.3"
+"aqua:pnpm/pnpm" = "12.9.1"
+node = "24.21.0"

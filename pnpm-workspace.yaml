@@ -1,0 +1,5 @@
+minimumReleaseAge: 10080
+saveExact: true
+blockExoticSubdeps: true
+strictDepBuilds: true
+allowBuilds: {}
