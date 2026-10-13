@@ -1,5 +1,8 @@
 # Access MCP Proxy
 
+> [!NOTE]
+> **Archived (2026-10-13).** Cloudflare MCP Server Portalsで同じことができると確認したため、このProxyは使っていません。経緯は[PRD](docs/prd/mcp-portal/prd.md)と[ADR 0002](docs/adr/0002-portal-by-privilege.md)を参照してください。以下はProxyとして動かしていた当時の記録です。
+
 ローカルのMCPサーバーをCloudflare Access越しにChatGPTなどの外部agentへ公開するTypeScript製Proxyです。Cloudflare Accessの認証済みユーザーを検証し、上流MCPの固定Bearer Tokenを内部で付与します。
 
 現在の上流は、最初の対象であるローカルOpenScreenだけです。以下の設定・検証はOpenScreenを前提にしています。
